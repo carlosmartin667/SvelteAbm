@@ -1,15 +1,24 @@
 <script>
   export let name;
+  let Accion = 0;
   let Personas = [];
   let persona = {
     Id: 0,
     Nombre: "",
-    Apellido: "cornejo",
+    Apellido: "",
     Sexo: true,
-    Edad: "21",
+    Edad: 0,
+  };
+
+  const escuchaFront = (num) => {
+    console.log(num);
+    Accion = num;
+    console.log(Accion);
+    return Accion;
   };
 
   const addpersonas = () => {
+   
     if (!persona.Nombre.trim()) {
       console.log("texto vacio");
       persona.texto = "";
@@ -20,13 +29,7 @@
     var i = (persona.Id += 1);
     Personas = [...Personas, persona];
     console.log(Personas);
-    persona = {
-      Id: i,
-      Nombre: "",
-      Apellido: "cornejo",
-      Sexo: true,
-      Edad: "21",
-    };
+   
   };
 
   const eliminarPersona = (Id) => {
@@ -34,13 +37,30 @@
   };
 
   const editarPersona = (Id) => {
+  
+    // detallesPersona(Id);
+    escuchaFront(2);
     Personas = Personas.map((item) => {
       if (item.Id === Id) {
         console.log("si hay");
-        console.log(Personas[Id-1]);
-        persona.Nombre = Personas[Id-1].Nombre;
+        console.log(Personas[Id - 1]);
+        persona.Nombre = Personas[Id - 1].Nombre;
         console.log(persona.Nombre);
-        return persona
+        return persona;
+      } else {
+        console.log("no hay");
+      }
+    });
+  };
+  const detallesPersona = (Id) => {
+     escuchaFront(3);
+    Personas = Personas.map((item) => {
+      if (item.Id === Id) {
+        console.log("si hay");
+        console.log(Personas[Id - 1]);
+        persona = Personas[Id - 1];
+        console.log(persona.Nombre);
+        return persona;
       } else {
         console.log("no hay");
       }
@@ -55,7 +75,16 @@
       <h3>abm agregar persona</h3>
     </div>
     <br />
-    <form on:submit|preventDefault={addpersonas}>
+    <button
+      
+      class="btn btn-sm btn-primary "
+      data-bs-toggle="modal"
+      data-bs-target="#exampleModal"
+      on:click|preventDefault={escuchaFront(1)}
+    >
+      Agregar persona
+    </button>
+    <!-- <form on:submit|preventDefault={addpersonas}>
       <div class="input-group mb-3">
         <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon1">Nombre : </span>
@@ -104,7 +133,7 @@
       <div class="text-center">
         <button on:click={addpersonas}> agregar</button>
       </div>
-    </form>
+    </form> -->
     <hr />
     <table class="table table-bordered table-striped">
       <thead class="thead-dark">
@@ -127,15 +156,26 @@
             <td>{item.Edad}</td>
             <td>
               <button
-                class="btn btn-sm btn-warning"  data-bs-toggle="modal"  data-bs-target="#exampleModal"
-                on:click={editarPersona(item.Id)}
+                class="btn btn-sm btn-warning"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                on:click|preventDefault={editarPersona(item.Id)}
               >
                 editar
                 <i class="bi bi-check2" />
               </button>
               <button
+                class="btn btn-sm btn-info"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                on:click|preventDefault={detallesPersona(item.Id)}
+              >
+                detalles
+                <i class="bi bi-trash" />
+              </button>
+              <button
                 class="btn btn-sm btn-danger"
-                on:click={eliminarPersona(item.Id)}
+                on:click|preventDefault={eliminarPersona(item.Id)}
               >
                 eliminar
                 <i class="bi bi-trash" />
@@ -146,7 +186,6 @@
       </tbody>
     </table>
     <!-- Button trigger modal -->
-   
 
     <!-- Modal -->
     <div
@@ -159,7 +198,17 @@
       <div class="modal-dialog modal-xl ">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Editar Persona</h5>
+            {#if Accion == 2}
+              <h5 class="modal-title" id="exampleModalLabel">Editar Persona</h5>
+            {:else if Accion == 1}
+              <h5 class="modal-title" id="exampleModalLabel">
+                Agregar Persona
+              </h5>
+              {:else if Accion == 3}
+              <h5 class="modal-title" id="exampleModalLabel">
+                Detalles Persona
+              </h5>
+            {/if}
             <button
               type="button"
               class="btn-close"
@@ -168,21 +217,26 @@
             />
           </div>
           <div class="modal-body">
-            <form on:submit|preventDefault={addpersonas} >
+            <form on:submit|preventDefault={addpersonas}>
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="basic-addon1">Nombre : </span>
+                  <span class="input-group-text" id="basic-addon1"
+                    >Nombre :
+                  </span>
                 </div>
                 <input
                   type="text"
                   class="form-control"
                   placeholder="agregar"
                   bind:value={persona.Nombre}
+                 
                 />
               </div>
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="basic-addon1">Apellido : </span>
+                  <span class="input-group-text" id="basic-addon1"
+                    >Apellido :
+                  </span>
                 </div>
                 <input
                   type="text"
@@ -193,7 +247,9 @@
               </div>
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="basic-addon1">Sexo : </span>
+                  <span class="input-group-text" id="basic-addon1"
+                    >Sexo :
+                  </span>
                 </div>
                 <input
                   type="text"
@@ -204,7 +260,9 @@
               </div>
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                  <span class="input-group-text" id="basic-addon1">Edad : </span>
+                  <span class="input-group-text" id="basic-addon1"
+                    >Edad :
+                  </span>
                 </div>
                 <input
                   type="number"
@@ -214,19 +272,29 @@
                 />
               </div>
               <br />
-              <div class="text-center">
-                <button on:click={addpersonas}> agregar</button>
-              </div>
             </form>
-          
           </div>
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal">Close</button
-            >
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <div class="text-center">
+              {#if Accion == 2}
+                <button type="button" class="btn btn-warning"> Editar </button>
+              {:else if Accion == 1}
+                <button
+                  class="btn btn-success"
+                  data-bs-dismiss="modal"
+                  on:click={addpersonas}
+                >
+                  agregar
+                </button>
+              {/if}
+              <button
+                type="button"
+                class="btn btn btn-danger"
+                data-bs-dismiss="modal"
+              >
+                cerrar
+              </button>
+            </div>
           </div>
         </div>
       </div>
